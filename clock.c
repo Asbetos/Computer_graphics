@@ -1,9 +1,9 @@
+#include <GL/glut.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include <GL/glut.h>
 
 // define glu objects
 int about_int=0;
@@ -22,8 +22,13 @@ GLfloat LightDiffuse[]= { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat LightPosition[]= { 5.0f, 25.0f, 15.0f, 1.0f };
 GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 
-static int light_state = 1; // light on = 1, light off = 0
-static int view_state = 1; // Ortho view = 1, Perspective = 0
+static int light_state = 0; // light on = 1, light off = 0
+static int view_state = 0; // Ortho view = 1, Perspective = 0
+
+float randomNum()
+{
+return ((float)rand())/RAND_MAX;
+}
 
 void Sprint( float x, float y, char *st)
 {
@@ -124,7 +129,8 @@ void Draw_clock( GLfloat cx, GLfloat cy, GLfloat cz )
   glPopMatrix();
 
   glPushMatrix();// Draw hour hand
-  glColor3f(1.0, 0.5, 0.5);
+  srand((unsigned int)time(NULL));
+  glColor3f(randomNum(), randomNum(), randomNum());
   glTranslatef( 0, 0, 0.0);
   glRotatef( (360/12) * newtime->tm_hour  + (360/60) * (60 / (newtime->tm_min+1)), 0.0, 0.0, 1.0);
   glPushMatrix();
@@ -136,7 +142,8 @@ void Draw_clock( GLfloat cx, GLfloat cy, GLfloat cz )
   glPopMatrix();
 
   glPushMatrix();// Draw minute hand
-  glColor3f(1.0, 0.5, 1.0);
+  glColor3f(randomNum(), randomNum(), randomNum());
+  //glColor3f(1.0, 0.5, 1.0);
   glTranslatef( 0, 0, 0.0);
   glRotatef( (360/60) * newtime->tm_min, 0.0, 0.0, 1.0);
   glPushMatrix();
@@ -149,6 +156,7 @@ void Draw_clock( GLfloat cx, GLfloat cy, GLfloat cz )
   glPopMatrix();
 
   glPushMatrix();// Draw second hand
+  //glColor3f(randomNum(), randomNum(), randomNum());
   glColor3f(1.0, 0.0, 0.5);
   glTranslatef( 0, 0, -0.0);
   glRotatef( (360/60) * newtime->tm_sec, 0.0, 0.0, 1.0);
@@ -165,7 +173,8 @@ void Draw_clock( GLfloat cx, GLfloat cy, GLfloat cz )
   for(hour_ticks = 0; hour_ticks < 12; hour_ticks++)
 	  {
 	  glPushMatrix();// Draw next arm axis.
-      glColor3f(0.0, 1.0, 1.0); // give it a color
+//	glColor3f(randomNum(), randomNum(), randomNum());      
+	glColor3f(0.0, 1.0, 1.0); // give it a color
 	  glTranslatef(0.0, 0.0, 0.0);
 	  glRotatef( (360/12) * hour_ticks, 0.0, 0.0, 1.0);
       glTranslatef( 6.0, 0.0, 0.0);
@@ -192,8 +201,10 @@ void Draw_clock( GLfloat cx, GLfloat cy, GLfloat cz )
 void num()
 {
     if(view_state == 1)
-	{
-	glColor3f( 0.0, 0.0, 1.0);
+	{  //srand((unsigned int)time(NULL));
+  	glColor3f(randomNum(), randomNum(), randomNum());
+
+//	glColor3f( 0.0, 0.0, 1.0);
 	Sprint(-6.2,-0.2,"9"); //counting from center
 	Sprint(-0.2,-6.2,"6"); 
 	Sprint(-0.4,5.7,"12");
@@ -205,11 +216,11 @@ void about()
 {
     //glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f( 1.0, 1.0, 1.0);
-    Sprint(-5,-2,"This project implements the clock");
-	Sprint(-5,-2.8,"   Both Wall clock and digit clock");
-	Sprint(-5,-3.6,"               is displayed");
-    Sprint(-5,-4.4,"   Clock shows the local time");
-	Sprint(-5,-5.2,"    fetching from computer");
+    Sprint(-5,-2.8,"\tOpenGL Clock");
+	Sprint(-5,-3.6,"\tAnalog and Digital Clock");
+	Sprint(-5,-4.4,"\tis implemented here");
+    Sprint(-5,-5.2,"\tClock shows the system time");
+	Sprint(-5,-6.0,"\tas fetched from the computer");
 	//glFlush(); 
 }
 
@@ -318,17 +329,17 @@ int main(int argc, char** argv)
    glutInitWindowSize (500, 500);
    glutInitWindowPosition (50, 50);
    glutCreateWindow (argv[0]);
-   glutSetWindowTitle("GLclock");
+   glutSetWindowTitle("CLOCK");
    init ();
    glutCreateMenu(options);
    glutAddMenuEntry("About the Project",1);
-   glutAddMenuEntry("Toggle Ortho/Perspective view",2);
+   glutAddMenuEntry("Zoom/Enlarge",2);
    glutAddMenuEntry("Light on/off",3);
    glutAddMenuEntry("Quit",4);
    glutAttachMenu(GLUT_RIGHT_BUTTON);
    glutDisplayFunc(display);
    glutReshapeFunc(reshape);
-   glutTimerFunc( 10, TimeEvent, 1);
+   glutTimerFunc(10, TimeEvent, 1);
    glutMainLoop();
    return 0;
 }
